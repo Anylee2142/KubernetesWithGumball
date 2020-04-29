@@ -30,6 +30,8 @@ If this doesn't work,
 - kubectl create -f mongo-service.yaml
 - kubectl get --namespace gumball services
 
+
+_________________________________________________________
 -- Gumball MongoDB Collection (Create Document)
 
 Database Name: cmpe281
@@ -65,13 +67,14 @@ db.gumball.find( { Id: 1 } ) ;
 
 ## RabbitMQ
 
-kubectl create -f rabbitmq-pod.yaml
-kubectl get pods --namespace gumball rabbitmq
-kubectl exec  --namespace gumball -it rabbitmq -- /bin/bash
+- kubectl create -f rabbitmq-pod.yaml
+- kubectl get pods --namespace gumball rabbitmq
+- kubectl exec  --namespace gumball -it rabbitmq -- /bin/bash
 
-kubectl create -f rabbitmq-service.yaml
-kubectl get --namespace gumball services
+- kubectl create -f rabbitmq-service.yaml
+- kubectl get --namespace gumball services
 
+_________________________________________________________
 -- RabbitMQ Create Queue:  
 
 Queue Name: gumball
@@ -80,26 +83,26 @@ Durable:	no
 > rabbitmqadmin declare queue name=gumball durable=false
 > rabbitmqadmin list queues vhost name node messages 
 
-export host=localhost
-export user=guest
-export passwd=guest
+- export host=localhost
+- export user=guest
+- export passwd=guest
 
-rabbitmqadmin -u $user -p $passwd -H $host list queues name node messages
+- rabbitmqadmin -u $user -p $passwd -H $host list queues name node messages
 
 ## Gumball API
 
-kubectl create -f gumball-deployment.yaml --save-config
-kubectl get --namespace gumball deployments
-kubectl get pods --namespace gumball -l name=gumball
-kubectl exec  --namespace gumball -it <pod> -- /bin/bash
+- kubectl create -f gumball-deployment.yaml --save-config
+- kubectl get --namespace gumball deployments
+- kubectl get pods --namespace gumball -l name=gumball
+- kubectl exec  --namespace gumball -it <pod> -- /bin/bash
 
-kubectl create -f gumball-service.yaml
-kubectl get --namespace gumball services
+- kubectl create -f gumball-service.yaml
+- kubectl get --namespace gumball services
 
-kubectl delete deployment --namespace gumball gumball-deployment
+- kubectl delete deployment --namespace gumball gumball-deployment
 
-curl localhost:3000/ping
-curl localhost:3000/gumball
+- curl localhost:3000/ping
+- curl localhost:3000/gumball
 
 test-place-order:
 	curl -X POST \
