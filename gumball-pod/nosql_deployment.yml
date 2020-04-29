@@ -1,0 +1,26 @@
+# deployment.yaml
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: nosql
+spec:
+  replicas: 5
+  template:
+    metadata:
+      labels:
+        app: nosql-app
+    spec:
+      containers:
+        - name: nosql-app
+          image: jkl2142/nosql:v1.0
+          env:
+            - name: FIRST_NOSQL
+              value: api_node_1
+            - name: SECOND_NOSQL
+              value: api_node_2
+            - name: THIRD_NOSQL
+          ports:
+            - containerPort: 8888
+              name: admin
+            - containerPort: 9090
+              name: app

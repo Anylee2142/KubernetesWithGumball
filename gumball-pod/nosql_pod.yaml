@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nosql-pod-1
+  namespace: default
+  labels:
+    app: nosql-pod-1
+spec:
+  containers:
+    - image: jkl2142/nosql:v1.0
+      name: nosql-pod-1
+      env:
+        - name: FIRST_NOSQL
+          value: api_node_1
+        - name: SECOND_NOSQL
+          value: api_node_2
+        - name: THIRD_NOSQL
+          value: api_node_3
+        - name: FOURTH_NOSQL
+          value: api_node_4
+        - name: FIFTH_NOSQL
+          value: api_node_5
+      ports:
+        - containerPort: 8888
+          name: admin
+        - containerPort: 9090
+          name: app
+  nodeSelector:
+    nosql-pod: 1

@@ -1,0 +1,17 @@
+# deployment.yaml
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: gumball
+spec:
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: test-app
+    spec:
+      containers:
+        - name: user-app
+          image: paulnguyen/gumball:gumball-pod
+          ports:
+            - containerPort: 3000
