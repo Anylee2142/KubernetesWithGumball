@@ -1,7 +1,13 @@
 
+# Kubernetes 1.15 with Go, MongoDB, and RabbitMQ
+- These examples demonstrate in both local and GKE
+
+## Pre-requisite
+1. Mac
+2. Docker Desktop
+3. Go latest
 
 # Go Gumball Sample Stack on Kubernetes
-
 kubectl create -f kubernetes-namespace.yaml
 kubectl create -f kubernetes-dashboard.yaml
 kubectl get pods --namespace=kube-system
