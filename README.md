@@ -8,27 +8,27 @@
 3. Go latest
 
 # Go Gumball Sample Stack on Kubernetes
-kubectl create -f kubernetes-namespace.yaml
-kubectl create -f kubernetes-dashboard.yaml
-kubectl get pods --namespace=kube-system
-export pod=<dashboard-pod>
-kubectl port-forward $pod 8443:8443 --namespace=kube-system
+- kubectl create -f kubernetes-namespace.yaml
+- kubectl create -f kubernetes-dashboard.yaml
+- kubectl get pods --namespace=kube-system
+- export pod=<dashboard-pod>
+- kubectl port-forward $pod 8443:8443 --namespace=kube-system
 
 If this doesn't work,
-kubectl proxy
-then go to http://localhost:8001/api/v1/namespaces/kube-system/services/https:kubernetes-dashboard:/proxy/.
+- kubectl proxy
+- then go to http://localhost:8001/api/v1/namespaces/kube-system/services/https:kubernetes-dashboard:/proxy/.
 
 
 # Kubernetes Localhost
 
 ## Mongo
 
-kubectl create -f mongo-pod.yaml
-kubectl get pods --namespace gumball mongo
-kubectl exec  --namespace gumball -it mongo -- /bin/bash
+- kubectl create -f mongo-pod.yaml
+- kubectl get pods --namespace gumball mongo
+- kubectl exec  --namespace gumball -it mongo -- /bin/bash
 
-kubectl create -f mongo-service.yaml
-kubectl get --namespace gumball services
+- kubectl create -f mongo-service.yaml
+- kubectl get --namespace gumball services
 
 -- Gumball MongoDB Collection (Create Document)
 
