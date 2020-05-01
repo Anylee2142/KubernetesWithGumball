@@ -1,3 +1,6 @@
+# Kubernetes 1.15 with Go, MongoDB, and RabbitMQ
+- These examples demonstrate in both local and GKE
+- Lab #10
 
 # Go Gumball Sample Stack on Kubernetes
 
