@@ -1,44 +1,36 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: gumball-deployment
+  name: gumball-api
   namespace: gumball
 spec:
   selector:
     matchLabels:
-      name: gumball
-  replicas: 2 # tells deployment to run 2 pods matching the template
+      name: gumball-api
+  replicas: 5 # tells deployment to run 2 pods matching the template
   template: # create pods using pod definition in this template
     metadata:
       # unlike pod.yaml, the name is not included in the meta data as a unique name is
       # generated from the deployment name
       labels:
-        name: gumball
+        name: gumball-api
     spec:
       containers:
-      - name: gumball
-        image: jkl2142/gumball:k8s_3
-        imagePullPolicy: Always
-        env:
-        - name: PORT
-          value: "3000"
-        - name: MONGODB_SERVER
-          value: "mongodb://admin:cmpe281@10.138.0.7:27017/cmpe281"
-        - name: MONGODB_DATABASE
-          value: "cmpe281"
-        - name: MONGODB_COLLECTION
-          value: "gumball"
-        - name: RABBITMQ_SERVER
-          value: "rabbitmq-rabbitmq-svc"
-        - name: RABBITMQ_PORT
-          value: "5672"
-        - name: RABBITMQ_QUEUE
-          value: "gumball"
-        - name: RABBITMQ_USER
-          value: "rabbit"
-        - name: RABBITMQ_PASSWORD
-          value: "mdKo4vrn63fU"
-        ports:
-        - containerPort: 3000
+        - name: gumball-api
+          image: paulnguyen/gumball-api
+          imagePullPolicy: Always
+          env:
+            - name: PORT
+              value: "3000"
+            - name: mongodb_server
+              value: "mongodb://admin:cmpe281@10.138.0.7:27017/cmpe281"
+            - name: mongodb_database
+              value: "cmpe281"
+            - name: mongodb_collection
+              value: "gumball"
+            - name: redis_connect
+              value: "10.81.10.247:6379"
+          ports:
+            - containerPort: 3000
 
 

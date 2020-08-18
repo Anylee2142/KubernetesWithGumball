@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: gumball-service
+  name: gumball-api-service
   namespace: gumball
 spec:
   type: LoadBalancer
@@ -15,4 +15,4 @@ spec:
   # but this time it identifies the set of pods to load balance
   # traffic to.
   selector:
-    name: gumball
+    name: gumball-api

@@ -170,7 +170,7 @@ Collection Name: gumball
 > ssh into instance
 > mongo --username root --password --host <host>
 
-> mongo --username root --password --host 10.138.0.9
+> mongo --username root --password wrVb3GsWXxnK --host 10.138.0.7
   (enter temp password from deployment)
 
 use cmpe281
@@ -221,8 +221,8 @@ kubectl create -f kubernetes-namespace.yaml
    - Username:                  rabbit
    - RabbitMQ Service Account:  (create new one)
 4. On GKE Applications for RabbitMQ.  Get Admin User's Password. (if launched directly from Deployment Manager, Note below from Console correctly)
-   - Username = user
-   - Password = 9hvQHRJawKxc
+   - Username = rabbit
+   - Password = DTFkb7obifop
 5. On GKE Services for RabbitMQ.  Note the Service Name.
    (i.e. RabbitMQ Service Name = rabbitmq-rabbitmq-svc)
 
@@ -315,7 +315,7 @@ ln -s /usr/bin/python3 /usr/bin/python
 
 kubectl exec  --namespace gumball -it jumpbox  -- /bin/bash
 
-mongo --username admin --password --host 10.138.0.9 cmpe281
+mongo --username admin --password cmpe281 --host 10.138.0.7 cmpe281
 (Password: cmpe281)
 
 db.gumball.find( { Id: 1 } ) ;
@@ -324,7 +324,7 @@ rabbitmqadmin -u rabbit -p <password> -H <host-ip-address> -P 15672 list queues 
 
 export host=10.128.0.49
 export host=rabbitmq-rabbitmq-svc
-export passwd=MJ6bhaJDfm1z
+export passwd=DTFkb7obifop
 
 rabbitmqadmin -u rabbit -p $passwd -H $host -P 15672 declare queue name=gumball durable=false
 rabbitmqadmin -u rabbit -p $passwd -H $host -P 15672 list queues name node messages
@@ -332,9 +332,9 @@ rabbitmqadmin -u rabbit -p $passwd -H $host -P 15672 list queues name node messa
 kubectl --namespace gumball get service rabbitmq-rabbitmq-svc --output yaml
  
 
-## Gumball API
+# Gumball API
 
--- Test Gumball API inside POD
+## Test Gumball API inside POD
 
 kubectl create -f gumball-pod.yaml
 kubectl exec  --namespace gumball -it gumball  -- /bin/bash
@@ -348,11 +348,13 @@ curl -X POST \
   -H 'Content-Type: application/json'
 
 
--- Deploy Gumball API Cluster
+## Deploy Gumball API Cluster
     - When modifying yaml, Note that
         1. Names of Environment variables is exactly same with what's inside in server (e.g. case-sensitive)
         2. Check Names of Environment variables format
 
+## Upload deployment file from local, not write everything there manually
+## fix docker image, password
 kubectl create -f gumball-deployment.yaml --save-config
 kubectl get --namespace gumball deployments
 
@@ -377,13 +379,13 @@ curl -X POST \
   -H 'Content-Type: application/json'
 
 
--- Deploy Gumball API Service
+## Deploy Gumball API Service
 
 kubectl create -f gumball-service.yaml
 kubectl get --namespace gumball services
 
 
--- Test Against Service IP
+## Test Against Service IP
 
 export host=<public-id>
 
@@ -394,20 +396,20 @@ curl -X POST \
   http://$host:9000/order \
   -H 'Content-Type: application/json'
 
-# Only shows placed orders from 1 instance, not all of them
+## Only shows placed orders from 1 instance, not all of them
 curl -X GET \
   http://$host:9000/order \
   -H 'Content-Type: application/json'
 
-# But when processing, it retrieves all the msgs from rabbitmq
+## But when processing, it retrieves all the msgs from rabbitmq
 curl -X POST \
   http://$host:9000/orders \
   -H 'Content-Type: application/json'
 
-# Why Panic when processing orders?
+## Why Panic when processing orders?
     - One of Instances has no placed order
 
-# Show all the logs?
+## Show all the logs?
     - kubectl logs --namespace gumball $pod
 
 ____________________________________________________

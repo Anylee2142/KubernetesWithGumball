@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gumball-node
+  namespace: gumball
+spec:
+  selector:
+    matchLabels:
+      name: gumball-node
+  replicas: 2 # tells deployment to run 2 pods matching the template
+  template: # create pods using pod definition in this template
+    metadata:
+      # unlike pod.yaml, the name is not included in the meta data as a unique name is
+      # generated from the deployment name
+      labels:
+        name: gumball-node
+    spec:
+      containers:
+      - name: gumball-node
+        image: paulnguyen/gumball-node
+        imagePullPolicy: Always
+        env:
+        - name: gumball_endpoint
+          value: "34.66.89.141:9000/gumball"
+        - name: order_endpoint
+          value: "34.66.89.141:9000/order"
+        ports:
+        - containerPort: 8080
+
+

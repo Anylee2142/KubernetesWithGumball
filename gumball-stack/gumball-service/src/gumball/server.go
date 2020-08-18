@@ -1,18 +1,16 @@
 /*
 	Gumball API in Go (Version 2)
-	Uses MongoDB and RabbitMQ 
-
+	Uses MongoDB and RabbitMQ
 	http://labix.org/mgo
 	https://github.com/streadway/amqp
-
 */
 
 package main
 
 import (
+    "os"
 	"fmt"
 	"log"
-	"os"
 	"net/http"
 	"encoding/json"
 	"github.com/codegangsta/negroni"
@@ -24,9 +22,10 @@ import (
     "gopkg.in/mgo.v2/bson"
 )
 
-var config = "K8S" // LOCAL, K8S, GKE
-var port = ""
+var config = "GKE" // LOCAL, K8S, GKE
+
 // MongoDB Config (Local Docker)
+var port = ""
 var mongodb_server = ""
 var mongodb_database = ""
 var mongodb_collection = ""
@@ -39,6 +38,8 @@ var rabbitmq_user = ""
 var rabbitmq_pass = ""
 
 func init() {
+    // For NodeJS,
+    // const PORT = process.env.PORT || 3000;
     fmt.Println("Changed init !")
     port = os.Getenv("PORT")
     mongodb_server = os.Getenv("MONGODB_SERVER")
@@ -87,7 +88,6 @@ func failOnError(err error, msg string) {
 // API Ping Handler
 func pingHandler(formatter *render.Render) http.HandlerFunc {
 	return func(w http.ResponseWriter, req *http.Request) {
-	    fmt.Println("port:", port )
 		fmt.Println("mongodb_server:", mongodb_server )
 		fmt.Println("mongodb_database:", mongodb_database )
 		fmt.Println("mongodb_collection:", mongodb_collection )
@@ -124,7 +124,7 @@ func gumballHandler(formatter *render.Render) http.HandlerFunc {
 func gumballUpdateHandler(formatter *render.Render) http.HandlerFunc {
 	return func(w http.ResponseWriter, req *http.Request) {
     	var m gumballMachine
-    	_ = json.NewDecoder(req.Body).Decode(&m)		
+    	_ = json.NewDecoder(req.Body).Decode(&m)
     	fmt.Println("Update Gumball Inventory To: ", m.CountGumballs)
 		session, err := mgo.Dial(mongodb_server)
         if err != nil {
@@ -143,7 +143,7 @@ func gumballUpdateHandler(formatter *render.Render) http.HandlerFunc {
         err = c.Find(bson.M{"SerialNumber" : "1234998871109"}).One(&result)
         if err != nil {
                 log.Fatal(err)
-        }        
+        }
         fmt.Println("Gumball Machine:", result )
 		formatter.JSON(w, http.StatusOK, result)
 	}
@@ -154,7 +154,7 @@ func gumballNewOrderHandler(formatter *render.Render) http.HandlerFunc {
 	return func(w http.ResponseWriter, req *http.Request) {
 		uuid, _ := uuid.NewV4()
     	var ord = order {
-					Id: uuid.String(),            		
+					Id: uuid.String(),
 					OrderStatus: "Order Placed",
 		}
 		if orders == nil {
@@ -189,7 +189,7 @@ func gumballOrderStatusHandler(formatter *render.Render) http.HandlerFunc {
 	}
 }
 
-// API Process Orders 
+// API Process Orders
 func gumballProcessOrdersHandler(formatter *render.Render) http.HandlerFunc {
 	return func(w http.ResponseWriter, req *http.Request) {
 
@@ -202,7 +202,7 @@ func gumballProcessOrdersHandler(formatter *render.Render) http.HandlerFunc {
         session.SetMode(mgo.Monotonic, true)
         c := session.DB(mongodb_database).C(mongodb_collection)
 
-       	// Get Gumball Inventory 
+       	// Get Gumball Inventory
         var result bson.M
         err = c.Find(bson.M{"SerialNumber" : "1234998871109"}).One(&result)
         if err != nil {
@@ -217,7 +217,7 @@ func gumballProcessOrdersHandler(formatter *render.Render) http.HandlerFunc {
 		for i := 0; i < len(order_ids); i++ {
 			var order_id = order_ids[i]
 			fmt.Println("Order ID:", order_id)
-			var ord = orders[order_id] 
+			var ord = orders[order_id]
 			ord.OrderStatus = "Order Processed"
 			orders[order_id] = ord
 			count -= 1
@@ -319,60 +319,46 @@ func queue_receive() []string {
 	var order_ids_array []string
 	for n := range order_ids {
     	order_ids_array = append(order_ids_array, n)
-    }	
+    }
 
     return order_ids_array
 }
 
 
 /*
-
 	-- RabbitMQ Setup
 	-- Default User/Pass: guest/guest
-
 	http://localhost:8080
-
-	-- RabbitMQ Create Queue:  
-
+	-- RabbitMQ Create Queue:
 		Queue Name: gumball
 		Durable:	no
-
-		> docker exec -it rabbitmq bash 
+		> docker exec -it rabbitmq bash
 		> rabbitmqadmin declare queue name=gumball durable=false
-		> rabbitmqadmin list queues vhost name node messages 
-
+		> rabbitmqadmin list queues vhost name node messages
 	-- Gumball MongoDB Create Database
-
 		Database Name: cmpe281
 		Collection Name: gumball
-
   	-- Gumball MongoDB Collection (Create Document) --
-
-
 	use cmpe281
 	show dbs
-	
+
 	db.createUser(
    	 {
      	user: "admin",
-     	pwd: "cmpe281",  
+     	pwd: "cmpe281",
      	roles: [ "readWrite", "dbAdmin" ]
    	 }
 	) ;
-
     db.gumball.insert(
-	    { 
+	    {
 	      Id: 1,
 	      CountGumballs: NumberInt(202),
 	      ModelNumber: 'M102988',
-	      SerialNumber: '1234998871109' 
+	      SerialNumber: '1234998871109'
 	    }
 	) ;
-
     -- Gumball MongoDB Collection - Find Gumball Document --
-
     db.gumball.find( { Id: 1 } ) ;
-
     {
         "_id" : ObjectId("54741c01fa0bd1f1cdf71312"),
         "Id" : 1,
@@ -380,39 +366,27 @@ func queue_receive() []string {
         "ModelNumber" : "M102988",
         "SerialNumber" : "1234998871109"
     }
-
     -- Gumball MongoDB Collection - Update Gumball Document --
-
-    db.gumball.update( 
-        { Id: 1 }, 
+    db.gumball.update(
+        { Id: 1 },
         { $set : { CountGumballs : NumberInt(10) } },
-        { multi : false } 
+        { multi : false }
     )
-
     -- Gumball Delete Documents
-
     db.gumball.remove({})
-
-
     -- CURL Tests
-
 	curl localhost:3000/ping
 	curl localhost:3000/gumball
-
 	test-place-order:
 		curl -X POST \
 	  	http://localhost:3000/order \
 	  	-H 'Content-Type: application/json'
-
 	test-order-status:
 		curl -X GET \
 	  	http://localhost:3000/order \
 	  	-H 'Content-Type: application/json'
-
 	test-process-order:
 		curl -X POST \
 	  	http://localhost:3000/orders \
 	  	-H 'Content-Type: application/json'
-
-
- */
+*/
